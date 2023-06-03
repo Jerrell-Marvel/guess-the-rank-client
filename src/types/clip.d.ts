@@ -4,3 +4,5 @@ export type Clip = {
   category: string;
   status: string;
 };
+
+export type Clips = Clip[];
