@@ -1,4 +1,5 @@
 import { Categories, Category } from "@/types/category";
+import { validateYouTubeUrl } from "@/utils/matchRegex";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
@@ -21,7 +22,18 @@ const SubmitClipPage = ({ category }: InferGetStaticPropsType<typeof getStaticPr
       <h2>{category.name}</h2>
       <form
         onSubmit={(e) => {
+          console.log(clipData.link);
           e.preventDefault();
+
+          if (!clipData.link) {
+            return console.log("link can't be empty");
+          }
+
+          if (!validateYouTubeUrl(clipData.link)) {
+            return console.log("invalid link");
+          } else {
+            return;
+          }
           submitClip();
         }}
       >
