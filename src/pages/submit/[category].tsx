@@ -31,8 +31,6 @@ const SubmitClipPage = ({ category }: InferGetStaticPropsType<typeof getStaticPr
 
           if (!validateYouTubeUrl(clipData.link)) {
             return console.log("invalid link");
-          } else {
-            return;
           }
           submitClip();
         }}

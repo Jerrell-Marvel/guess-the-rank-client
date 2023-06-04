@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import axios from "axios";
-import { Clips } from "@/types/clip";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import axios, { AxiosError } from "axios";
+import { Clip, Clips } from "@/types/clip";
 const clipStatusArr = ["pending", "verified"];
 
 const AdminCategoryPage = () => {
@@ -33,6 +33,33 @@ const AdminCategoryPage = () => {
   //   }
   // }, [router.isReady, queryClient]);
 
+  const { data: verifyClipResponse, mutate: verifyClip } = useMutation<Clip, AxiosError, string>({
+    mutationFn: async (clipId) => {
+      const response = await axios.post<Clip>(`http://localhost:5000/api/v1/clip/verify/${clipId}`, null, { withCredentials: true });
+      const data = response.data;
+      return data;
+    },
+
+    onSuccess: (_res, clipId) => {
+      console.log(["category", router.query.category, "pending"]);
+      const clips = queryClient.getQueryData<Clips>(["category", router.query.category, "pending"]);
+
+      if (clips) {
+        const tempClips = clips
+          .map((clip) => {
+            return { ...clip };
+          })
+          .filter((clip) => {
+            return clip._id !== clipId;
+          });
+
+        console.log(tempClips);
+
+        queryClient.setQueryData<Clips>(["category", router.query.category, "pending"], tempClips);
+      }
+    },
+  });
+
   return (
     <div>
       <div>
@@ -56,12 +83,11 @@ const AdminCategoryPage = () => {
               <span className="text-blue-600 underline">{clip.link} </span>
               <span>{clip.status} </span>
 
-              {clip.status === "pending" ? <button>Verify </button> : null}
+              {clip.status === "pending" ? <button onClick={() => verifyClip(clip._id)}>Verify </button> : null}
             </div>
           );
         })}
       </div>
-      lol
     </div>
   );
 };
