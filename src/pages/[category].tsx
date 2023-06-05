@@ -8,7 +8,7 @@ import { Clip } from "@/types/clip";
 import { Guesses } from "@/types/guess";
 
 type SubmitResponse = {
-  result: Guesses;
+  guesses: Guesses;
   isCorrect: boolean;
   totalDocuments: number;
 };
