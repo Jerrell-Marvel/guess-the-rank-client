@@ -85,13 +85,16 @@ const MyClips = () => {
         })}
       </div>
 
-      <div>
+      <div className="flex flex-col">
         {clips?.map((clip) => {
           return (
-            <div key={clip._id}>
+            <Link
+              key={clip._id}
+              href={`/clip/${clip._id}`}
+            >
               <span className="text-blue-600 underline">{clip.link} </span>
               <span>{clip.status} </span>
-            </div>
+            </Link>
           );
         })}
       </div>
