@@ -5,6 +5,7 @@ export type Category = {
   name: string;
   description: string;
   ranks: Rank[];
+  imgUrl: string;
 };
 
 export type Categories = Category[];

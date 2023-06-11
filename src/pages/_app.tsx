@@ -7,9 +7,13 @@ import { ReactQueryDevtools } from "react-query/devtools";
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <div className="flex justify-center bg-slate-950">
+      <div className="max-w-7xl">
+        <QueryClientProvider client={queryClient}>
+          <Component {...pageProps} />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        </QueryClientProvider>
+      </div>
+    </div>
   );
 }
