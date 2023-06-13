@@ -8,7 +8,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <div className="flex justify-center bg-slate-950">
-      <div className="max-w-7xl">
+      <div className="max-w-7xl w-full">
         <QueryClientProvider client={queryClient}>
           <Component {...pageProps} />
           {/* <ReactQueryDevtools initialIsOpen={false} /> */}
