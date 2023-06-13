@@ -6,11 +6,25 @@ import { Categories, Category } from "@/types/category";
 import { useMutation } from "react-query";
 import { Clip } from "@/types/clip";
 import { Guesses } from "@/types/guess";
+import Image from "next/image";
+import { youtubeParser } from "@/utils/youtubeParser";
 
 type SubmitResponse = {
   guesses: Guesses;
   isCorrect: boolean;
   totalDocuments: number;
+};
+
+type SubmitResult = {
+  total: number;
+  isCorrect: boolean;
+  ranks: {
+    _id: string;
+    name: string;
+    imgUrl: string;
+    count: number;
+    percentage: string;
+  }[];
 };
 
 const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -20,7 +34,10 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
 
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [selectedRank, setSelectedRank] = useState("");
-  const [isResultShow, setIsResultShow] = useState(false);
+  // const [isResultShow, setIsResultShow] = useState(false);
+  // const [result, setResult] = useState();
+
+  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
 
   const { data: clip, mutate: getClip } = useMutation<Clip, AxiosError, string>({
     mutationFn: async (category) => {
@@ -30,7 +47,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
     },
   });
 
-  const { data: submitResponse, mutate: submitClip } = useMutation<SubmitResponse, AxiosError, { clipId: string; rankGuess: string }>({
+  const { data, mutate: submitClip } = useMutation<SubmitResponse, AxiosError, { clipId: string; rankGuess: string }>({
     mutationFn: async ({ clipId, rankGuess }) => {
       const response = await axios.post<SubmitResponse>(`http://localhost:5000/api/v1/guess/${clipId}`, { rankGuess });
       const data = response.data;
@@ -38,43 +55,112 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
       return data as SubmitResponse;
     },
 
-    onSuccess: () => {
-      setIsResultShow(true);
+    onSuccess: (data) => {
+      // setIsResultShow(true);
       setSelectedRank("");
+
+      const ranks = category.ranks.map((rank) => {
+        const rankData = data.guesses.find((e) => e.rank._id == rank._id);
+        return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
+      });
+
+      const result: SubmitResult = { total: data.totalDocuments, isCorrect: data.isCorrect, ranks };
+
+      // console.log(result);
+      setSubmitResult(result);
     },
   });
 
   return (
-    <div>
+    <div className=" w-full border-white flex items-center text-white flex-col min-h-screen justify-center gap-6 px-4 md:px-8 py-6 md:py-12">
       {!clip ? (
-        <div>
-          <h1>GUESS THE RANK</h1>
-          <h2>{category.name}</h2>
-          <p>You will be asked to guess the rank of given clip!!!</p>
+        <>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase font-bold">{category.name}</h2>
+          <div className="w-full sm:w-1/2 aspect-[4/3] bg-blue-200 relative">
+            <Image
+              src={`http://localhost:5000/static/category-images/${category.imgUrl}`}
+              fill={true}
+              alt={category.name}
+            />
+          </div>
+          <h4 className="text-paragraph text-slate-400">
+            Play guess the rank for <span className="capitalize">{category.name}</span>
+          </h4>
 
-          <button
+          {/* <button
             onClick={() => {
               getClip(category._id);
             }}
           >
             Start
-          </button>
-        </div>
-      ) : isResultShow ? (
-        <div>
-          <span>{JSON.stringify(submitResponse)}</span>
+          </button> */}
+          <div className="flex flex-col w-full max-w-sm gap-4">
+            <button
+              className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
+              onClick={() => {
+                getClip(category._id);
+              }}
+            >
+              <div className="py-3">Start</div>
+            </button>
+            <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+              <div className="py-3">Upload own clip</div>
+            </button>
+          </div>
+        </>
+      ) : submitResult ? (
+        <>
+          <div className="bg-slate-700 w-full flex flex-col">
+            {submitResult.ranks.map((rank) => {
+              return (
+                <div
+                  key={rank._id}
+                  className="w-full"
+                >
+                  <span>{rank.name}</span>
+                  <span>{rank.percentage}</span>
+                  <div
+                    className={`bg-blue-200 h-8`}
+                    style={{ width: `${rank.percentage}%` }}
+                  ></div>
+                </div>
+              );
+            })}
+          </div>
+          <span>{JSON.stringify(submitResult)}</span>
+
           <button
+            className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
-              setIsResultShow(false);
+              setSubmitResult(null);
               getClip(category._id);
             }}
           >
-            Play again
+            <div className="py-3">Play again</div>
           </button>
-        </div>
+          <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+            <div className="py-3">Upload own clip</div>
+          </button>
+          <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+            <div className="py-3">Home</div>
+          </button>
+        </>
       ) : (
-        <div>
-          <h3>{clip.link}</h3>
+        <>
+          {/* <h3>{clip.link}</h3> */}
+          <div className="w-full bg-red-200 aspect-[560/315]">
+            <iframe
+              width="560"
+              height="315"
+              src={`https://www.youtube.com/embed/${youtubeParser(clip.link)}`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+
           {category.ranks.map((rank) => {
             return (
               <div
@@ -86,14 +172,16 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
               </div>
             );
           })}
+
           <button
+            className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
               submitClip({ clipId: clip._id, rankGuess: selectedRank });
             }}
           >
-            submit
+            <div className="py-3">Submit</div>
           </button>
-        </div>
+        </>
       )}
     </div>
   );
