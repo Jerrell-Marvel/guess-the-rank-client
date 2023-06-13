@@ -76,19 +76,22 @@ export default function Home({ categories }: InferGetStaticPropsType<typeof getS
             return (
               <Link
                 href={`/${category.name}`}
-                className="w-full relative aspect-[4/3] overflow-hidden group text-white rounded-lg"
+                className="w-full group text-white rounded-md overflow-hidden"
                 key={category.name}
               >
-                <Image
-                  src={`http://localhost:5000/static/category-images/${category.imgUrl}`}
-                  alt={category.name}
-                  fill={true}
-                  className="group-hover:scale-110 transition duration-500"
-                />
+                <div className="w-full relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={`http://localhost:5000/static/category-images/${category.imgUrl}`}
+                    alt={category.name}
+                    fill={true}
+                    className="group-hover:scale-110 transition duration-500"
+                  />
+                </div>
 
-                <div className="h-1/2 absolute bottom-0 w-full bg-gradient-to-t to-transparent from-slate-900 bg-opacity-10">{/* <div className=" absolute top-[-100%] h-full w-full"></div> */}</div>
+                {/* <div className="h-1/2 absolute bottom-0 w-full bg-gradient-to-t to-transparent from-slate-900 bg-opacity-10"></div> */}
 
-                <h4 className="text-4xl md:text-3xl font-bold uppercase absolute bottom-[10%] px-6">{category.name}</h4>
+                {/* <h4 className="text-4xl md:text-3xl font-bold uppercase absolute bottom-[10%] px-6">{category.name}</h4> */}
+                <h4 className="text-lg sm:text-2xl md:text-xl font-semibold uppercase p-4 bg-slate-900 group-hover:text-slate-400 transition duration-500">{category.name}</h4>
               </Link>
             );
           })}
