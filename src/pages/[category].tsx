@@ -96,14 +96,14 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           </button> */}
           <div className="flex flex-col w-full max-w-sm gap-4">
             <button
-              className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
+              className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
               onClick={() => {
                 getClip(category._id);
               }}
             >
               <div className="py-3">Start</div>
             </button>
-            <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+            <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
               <div className="py-3">Upload own clip</div>
             </button>
           </div>
@@ -130,7 +130,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           <span>{JSON.stringify(submitResult)}</span>
 
           <button
-            className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
+            className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
               setSubmitResult(null);
               getClip(category._id);
@@ -138,10 +138,10 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           >
             <div className="py-3">Play again</div>
           </button>
-          <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+          <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
             <div className="py-3">Upload own clip</div>
           </button>
-          <button className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400">
+          <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
             <div className="py-3">Home</div>
           </button>
         </>
@@ -174,7 +174,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           })}
 
           <button
-            className="w-full bg-slate-900 font-semibold max-w-sm hover:text-blue-400"
+            className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
               submitClip({ clipId: clip._id, rankGuess: selectedRank });
             }}
