@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className="max-w-7xl w-full">
           <QueryClientProvider client={queryClient}>
             <Component {...pageProps} />
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </div>
       </div>
