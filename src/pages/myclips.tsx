@@ -58,7 +58,7 @@ type A = {
 const MyClips = () => {
   const router = useRouter();
   //   const queryClient = useQueryClient();
-  const [activeStatus, setActiveStatus] = useState<string>(() => (router.query.status as string) || "pending");
+  const [activeStatus, setActiveStatus] = useState<string>("verified");
   const [isStatusActive, setIsStatusActive] = useState(false);
   const [isCategoryActive, setIsCategoryActive] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -87,8 +87,8 @@ const MyClips = () => {
       }
     }
 
-    if (router.query.status === "verified") {
-      setActiveStatus("verified");
+    if (router.query.status === "pending") {
+      setActiveStatus("pending");
     }
   }, [router.isReady, categories]);
 
@@ -132,7 +132,7 @@ const MyClips = () => {
     <>
       {clipDetails && isClipDetailActive ? (
         <div className="bg-slate-950 fixed top-0 left-0 right-0 bottom-0 bg-opacity-40 flex justify-center items-center spacing-x spacing-y z-[99]">
-          <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-700 p-3 text-white rounded-md relative">
+          <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-800 p-6 text-white rounded-md relative">
             <svg
               clip-rule="evenodd"
               fill-rule="evenodd"
@@ -143,7 +143,7 @@ const MyClips = () => {
               fill="white"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              className="absolute right-3 top-3 cursor-pointer"
+              className="absolute right-6 top-6 cursor-pointer"
               onClick={() => {
                 setIsClipDetailActive(false);
               }}
@@ -151,18 +151,19 @@ const MyClips = () => {
               <path d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" />
             </svg>
 
-            <h3 className="text-paragraph text-center font-semibold">Clip Details</h3>
+            <h3 className="text-paragraph font-semibold">Clip Details</h3>
 
-            <div className="text-center text-lg md:text-xl mt-2">
+            <div className="text-md md:text-lg my-2 text-slate-400 flex gap-2">
               <div>Total guesses : {clipDetails?.totalDocuments}</div>
+              <span>|</span>
               <div>Actual rank : {clipDetails.clip.actualRank.name}</div>
             </div>
 
-            <div className="flex h-[50vh] justify-between">
+            <div className="flex flex-col gap-2">
               {clipDetails?.rankGuesses.map((rank) => {
                 return (
                   <>
-                    <div
+                    {/* <div
                       key={rank._id}
                       className="h-full flex flex-col justify-end"
                     >
@@ -184,6 +185,25 @@ const MyClips = () => {
                         style={{ height: `${rank.percentage}%` }}
                       ></div>
                       <span>{rank.name}</span>
+                    </div> */}
+
+                    <div
+                      key={rank._id}
+                      className=""
+                    >
+                      <div className="flex justify-between">
+                        <div>{rank.name}</div>
+                        <div>{rank.percentage}%</div>
+                      </div>
+
+                      <div className="bg-slate-700">
+                        <div
+                          className={`bg-blue-400 h-6 rounded-sm`}
+                          style={{ width: `${rank.percentage}%` }}
+                        ></div>
+                      </div>
+
+                      {/* <span>{rank.name}</span> */}
                     </div>
                   </>
                 );
@@ -310,7 +330,7 @@ const MyClips = () => {
             {clips?.map((clip) => {
               return (
                 <div
-                  className="w-full aspect-[560/315] bg-slate-700 rounded-md"
+                  className="w-full aspect-[560/315] bg-slate-800 rounded-md"
                   key={clip._id}
                 >
                   <iframe
