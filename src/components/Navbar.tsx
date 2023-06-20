@@ -7,19 +7,26 @@ const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
   return (
     <>
-      <div
-        className="w-6 h-6 fixed top-4 left-4 z-[99] cursor-pointer flex flex-col justify-around"
-        onClick={() => setIsActive(true)}
-      >
-        <div className="h-[2px] bg-white"></div>
-        <div className="h-[2px] bg-white"></div>
-        <div className="h-[2px] bg-white"></div>
+      <div className="w-full bg-slate-950 bg-opacity-75 absolute top-0 h-16 flex items-center spacing-x justify-end">
+        <div
+          className="w-6 h-6 z-[99] cursor-pointer flex flex-col justify-around"
+          onClick={() => setIsActive(true)}
+        >
+          <div className="h-[2px] bg-white"></div>
+          <div className="h-[2px] bg-white"></div>
+          <div className="h-[2px] bg-white"></div>
+        </div>
       </div>
 
-      <div className={`absolute top-0 left-0 w-full h-full bg-slate-950 bg-opacity-40 z-[999]  transition-all duration-500 ${isActive ? "block" : "hidden"}`}></div>
+      <div
+        className={`absolute top-0 left-0 w-full h-full bg-slate-950 bg-opacity-40 z-[999]  transition-all duration-500 ${isActive ? "block" : "hidden"}`}
+        onClick={() => {
+          setIsActive(false);
+        }}
+      ></div>
 
-      <div className={`w-full max-w-sm h-full bg-slate-950 p-4 overflow-y-scroll text-white  transition-all duration-[400ms] ${isActive ? "translate-x-0" : "-translate-x-full"} absolute left-0 z-[1000]`}>
-        <div className="w-full flex justify-end">
+      <div className={`w-full max-w-sm h-full bg-slate-950 p-4 overflow-y-scroll text-white  transition-all duration-[400ms] ${isActive ? "translate-x-0" : "translate-x-full"} absolute z-[1000] right-0 rtl`}>
+        <div className="w-full flex justify-end ltr">
           <svg
             clip-rule="evenodd"
             fill-rule="evenodd"
@@ -39,7 +46,7 @@ const Navbar = () => {
         </div>
         <Link
           href="/"
-          className="w-full py-4 px-2 hover:bg-slate-800 rounded-md flex gap-3"
+          className="w-full py-4 px-2 hover:bg-slate-800 rounded-md flex gap-3 ltr"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +60,7 @@ const Navbar = () => {
 
           <span>Home</span>
         </Link>
-        <div className="w-full py-4 px-2 flex gap-3 hover:bg-slate-800 rounded-md cursor-pointer">
+        <div className="w-full py-4 px-2 flex gap-3 hover:bg-slate-800 rounded-md cursor-pointer ltr">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -69,7 +76,7 @@ const Navbar = () => {
         {games.map((game) => {
           return (
             <div
-              className="w-full block py-4 pr-2 pl-6 hover:bg-slate-800 rounded-md cursor-pointer"
+              className="w-full block py-4 pr-2 pl-6 hover:bg-slate-800 rounded-md cursor-pointer ltr"
               key={game}
             >
               {game}
@@ -78,7 +85,7 @@ const Navbar = () => {
         })}
 
         <Link
-          className="w-full py-4 px-2 rounded-md hover:bg-slate-800 cursor-pointer flex gap-3"
+          className="w-full py-4 px-2 rounded-md hover:bg-slate-800 cursor-pointer flex gap-3 ltr"
           href="/upload"
         >
           <svg
@@ -93,7 +100,7 @@ const Navbar = () => {
           <span>Upload</span>
         </Link>
         <Link
-          className="w-full py-4 px-2 hover:bg-slate-800 cursor-pointer flex gap-3"
+          className="w-full py-4 px-2 hover:bg-slate-800 cursor-pointer flex gap-3 ltr"
           href="/about"
         >
           <svg

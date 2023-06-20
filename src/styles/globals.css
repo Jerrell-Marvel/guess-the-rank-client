@@ -27,7 +27,7 @@ body {
 } */
 
 html {
-  @apply scroll-smooth;
+  @apply scroll-smooth overflow-hidden;
 }
 
 @layer utilities {
@@ -40,7 +40,15 @@ html {
   }
 
   .spacing-y {
-    @apply py-6 md:py-12;
+    @apply py-0 md:py-0;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+
+  .ltr {
+    direction: ltr;
   }
 }
 
