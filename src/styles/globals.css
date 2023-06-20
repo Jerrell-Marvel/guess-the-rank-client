@@ -27,8 +27,12 @@ body {
 } */
 
 html {
-  @apply scroll-smooth overflow-hidden;
+  @apply scroll-smooth;
 }
+
+/* body {
+  @apply overflow-x-hidden;
+} */
 
 @layer utilities {
   .clip-tilt {
