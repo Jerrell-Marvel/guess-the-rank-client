@@ -145,6 +145,8 @@ const MyClips = () => {
               xmlns="http://www.w3.org/2000/svg"
               className="absolute right-6 top-6 cursor-pointer"
               onClick={() => {
+                // document.body.style.overflowY = "scroll";
+                // document.body.style.paddingRight = "0px";
                 setIsClipDetailActive(false);
               }}
             >
@@ -348,6 +350,8 @@ const MyClips = () => {
                     <div
                       className="p-4 font-medium flex justify-end items-center group cursor-pointer"
                       onClick={() => {
+                        // document.body.style.overflowY = "hidden";
+                        // document.body.style.paddingRight = "17px";
                         getClipDetails(clip._id);
                       }}
                     >

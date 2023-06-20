@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { useState } from "react";
@@ -8,6 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <div>
+      <Navbar />
       <div className="flex justify-center bg-slate-950">
         <div className="max-w-7xl w-full">
           <QueryClientProvider client={queryClient}>
