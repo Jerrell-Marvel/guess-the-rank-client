@@ -105,50 +105,5 @@ export const getStaticProps: GetStaticProps<{ categories: Categories }> = async 
   const response = await axios.get<Categories>("http://localhost:5000/api/v1/categories");
   const data = response.data;
 
-  // [
-  //   {
-  //     _id: '6483fcff7fb54cba574c38a1',
-  //     name: 'valorant',
-  //     imgUrl: 'categoryImg-1686371583509-189958557.jpg',
-  //     description: 'valorant description, lorem ipsum dolor sit amet',
-  //     ranks: [
-  //       '6483fd127fb54cba574c38a3',
-  //       '6483fd187fb54cba574c38a6',
-  //       '6483fd1d7fb54cba574c38a9'
-  //     ],
-  //     __v: 0
-  //   },
-  //   {
-  //     _id: '6483fd4e7fb54cba574c38ac',
-  //     name: 'cs go',
-  //     imgUrl: 'categoryImg-1686371662383-334958501.png',
-  //     description: 'cs go description, lorem ipsum dolor sit amet',
-  //     ranks: [ '6483fd777fb54cba574c38ae', '6483fd7e7fb54cba574c38b1' ],
-  //     __v: 0
-  //   }
-  // ]
-  // [
-  //   {
-  //     _id: '6483fcff7fb54cba574c38a1',
-  //     name: 'valorant',
-  //     imgUrl: 'categoryImg-1686371583509-189958557.jpg',
-  //     description: 'valorant description, lorem ipsum dolor sit amet',
-  //     ranks: [
-  //       '6483fd127fb54cba574c38a3',
-  //       '6483fd187fb54cba574c38a6',
-  //       '6483fd1d7fb54cba574c38a9'
-  //     ],
-  //     __v: 0
-  //   },
-  //   {
-  //     _id: '6483fd4e7fb54cba574c38ac',
-  //     name: 'cs go',
-  //     imgUrl: 'categoryImg-1686371662383-334958501.png',
-  //     description: 'cs go description, lorem ipsum dolor sit amet',
-  //     ranks: [ '6483fd777fb54cba574c38ae', '6483fd7e7fb54cba574c38b1' ],
-  //     __v: 0
-  //   }
-  // ]
-
   return { props: { categories: [...data, ...data, ...data, ...data] } };
 };

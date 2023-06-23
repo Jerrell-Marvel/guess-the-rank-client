@@ -2,22 +2,18 @@ import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { Categories, Category } from "@/types/category";
+import { Categories, Category, CategoryWithRanks } from "@/types/category";
 import { useMutation } from "react-query";
 import { Clip } from "@/types/clip";
-import { Guesses } from "@/types/guess";
+import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import Image from "next/image";
 import { youtubeParser } from "@/utils/youtubeParser";
 
-type SubmitResponse = {
-  guesses: Guesses;
-  isCorrect: boolean;
-  totalDocuments: number;
-};
+type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number };
 
 type SubmitResult = {
-  total: number;
   isCorrect: boolean;
+  totalGuesses: number;
   ranks: {
     _id: string;
     name: string;
@@ -52,7 +48,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
       const response = await axios.post<SubmitResponse>(`http://localhost:5000/api/v1/guess/${clipId}`, { rankGuess });
       const data = response.data;
 
-      return data as SubmitResponse;
+      return data;
     },
 
     onSuccess: (data) => {
@@ -64,7 +60,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
         return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
       });
 
-      const result: SubmitResult = { total: data.totalDocuments, isCorrect: data.isCorrect, ranks };
+      const result: SubmitResult = { totalGuesses: data.totalGuesses, isCorrect: data.isCorrect, ranks };
 
       // console.log(result);
       setSubmitResult(result);
@@ -110,7 +106,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
         </>
       ) : submitResult ? (
         <>
-          <div className="bg-slate-700 w-full flex flex-col">
+          {/* <div className="bg-slate-700 w-full flex flex-col">
             {submitResult.ranks.map((rank) => {
               return (
                 <div
@@ -127,7 +123,68 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
               );
             })}
           </div>
-          <span>{JSON.stringify(submitResult)}</span>
+          <span>{JSON.stringify(submitResult)}</span> */}
+          <div className="w-full bg-slate-800 p-6 text-white rounded-md relative max-w-[640px]">
+            <h3 className="text-paragraph font-semibold">Clip Details</h3>
+            <h3 className="text-paragraph font-semibold">{JSON.stringify(submitResult.isCorrect)}</h3>
+
+            <div className="text-md md:text-lg my-2 text-slate-400 flex gap-2">
+              <div>Total guesses : {submitResult.totalGuesses}</div>
+              <span>|</span>
+              {/* <div>Actual rank : {submitResult.}</div> */}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {submitResult.ranks.map((rank) => {
+                return (
+                  <>
+                    {/* <div
+                      key={rank._id}
+                      className="h-full flex flex-col justify-end"
+                    >
+                      <span>{rank.percentage}%</span>
+                      <div
+                        className={`bg-blue-400`}
+                        style={{ height: `${rank.percentage}%` }}
+                      ></div>
+                      <span>{rank.name}</span>
+                    </div>
+
+                    <div
+                      key={rank._id}
+                      className="h-full flex flex-col justify-end"
+                    >
+                      <span>{rank.percentage}%</span>
+                      <div
+                        className={`bg-blue-400`}
+                        style={{ height: `${rank.percentage}%` }}
+                      ></div>
+                      <span>{rank.name}</span>
+                    </div> */}
+
+                    <div
+                      key={rank._id}
+                      className=""
+                    >
+                      <div className="flex justify-between">
+                        <div>{rank.name}</div>
+                        <div>{rank.percentage}%</div>
+                      </div>
+
+                      <div className="bg-slate-700">
+                        <div
+                          className={`bg-blue-400 h-6 rounded-sm`}
+                          style={{ width: `${rank.percentage}%` }}
+                        ></div>
+                      </div>
+
+                      {/* <span>{rank.name}</span> */}
+                    </div>
+                  </>
+                );
+              })}
+            </div>
+          </div>
 
           <button
             className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
@@ -211,9 +268,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<{ category: Category }> = async (context) => {
+export const getStaticProps: GetStaticProps<{ category: CategoryWithRanks }> = async (context) => {
   const { params } = context;
-  const response = await axios.get<Category>(`http://localhost:5000/api/v1/category/${params?.category}`);
+  const response = await axios.get<CategoryWithRanks>(`http://localhost:5000/api/v1/category/${params?.category}`);
   const data = response.data;
 
   return {

@@ -1,11 +1,18 @@
 import { Rank } from "./rank";
 
-export type Category = {
-  _id: string;
+export type CategorySchema = {
   name: string;
-  description: string;
-  ranks: Rank[];
   imgUrl: string;
+  description: string;
+  ranks: string[] | Rank[];
+};
+
+export type Category = CategorySchema & {
+  _id: string;
 };
 
 export type Categories = Category[];
+
+export type CategoryWithRanks = Omit<Category, "ranks"> & { ranks: Rank[] };
+
+export type CategoriesWithRanks = CategoryWithRanks[];

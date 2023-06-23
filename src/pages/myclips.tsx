@@ -1,50 +1,21 @@
-import { Categories, Category } from "@/types/category";
+import { Categories, CategoriesWithRanks, Category, CategoryWithRanks } from "@/types/category";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios, { AxiosError } from "axios";
 import Link from "next/link";
-import { Clip, Clips } from "@/types/clip";
+import { Clip, ClipWithActualRank, Clips } from "@/types/clip";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { addQueryParams } from "@/utils/AddQueryParams";
 import { youtubeParser } from "@/utils/youtubeParser";
-import { Guesses } from "@/types/guess";
+import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import { Rank } from "@/types/rank";
 
 const status = ["pending", "verified"];
-type GetClipDetailsResponse = {
-  guesses: Guesses;
-  clip: {
-    _id: string;
-    link: string;
-    category: string;
-    status: string;
-    actualRank: Rank;
-  };
-  totalDocuments: number;
-};
-
-type ClipDetailsResponse = {
-  // guesses: Guesses;
-  // total: number;
-  // isCorrect: boolean;
-  ranks: {
-    _id: string;
-    name: string;
-    imgUrl: string;
-    count: number;
-    percentage: string;
-  }[];
-};
+type GetClipDetailsResponse = { clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number };
 
 type A = {
-  clip: {
-    _id: string;
-    link: string;
-    category: string;
-    status: string;
-    actualRank: Rank;
-  };
-
+  clip: ClipWithActualRank;
+  totalGuesses: number;
   rankGuesses: {
     count: number;
     percentage: string;
@@ -52,7 +23,6 @@ type A = {
     name: string;
     imgUrl: string;
   }[];
-  totalDocuments: number;
 };
 
 const MyClips = () => {
@@ -61,13 +31,13 @@ const MyClips = () => {
   const [activeStatus, setActiveStatus] = useState<string>("verified");
   const [isStatusActive, setIsStatusActive] = useState(false);
   const [isCategoryActive, setIsCategoryActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null>(null);
   const [isClipDetailActive, setIsClipDetailActive] = useState(false);
 
-  const { data: categories } = useQuery<Categories>({
+  const { data: categories } = useQuery<CategoriesWithRanks>({
     queryKey: ["categories"],
     queryFn: async () => {
-      const response = await axios.get<Categories>("http://localhost:5000/api/v1/categories", {
+      const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
         params: {
           ranks: "true",
         },
@@ -111,6 +81,7 @@ const MyClips = () => {
   const { data: clipDetails, mutate: getClipDetails } = useMutation<A, AxiosError, string>({
     mutationFn: async (clipId) => {
       const response = await axios.get<GetClipDetailsResponse>(`http://localhost:5000/api/v1/clip/details/${clipId}`, { withCredentials: true });
+
       const data = response.data;
 
       const rankGuesses = selectedCategory!.ranks.map((rank) => {
@@ -118,8 +89,7 @@ const MyClips = () => {
         return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
       });
 
-      const result = { clip: data.clip, rankGuesses, totalDocuments: data.totalDocuments };
-
+      const result = { clip: data.clip, rankGuesses, totalGuesses: data.totalGuesses };
       return result;
     },
 
@@ -156,7 +126,7 @@ const MyClips = () => {
             <h3 className="text-paragraph font-semibold">Clip Details</h3>
 
             <div className="text-md md:text-lg my-2 text-slate-400 flex gap-2">
-              <div>Total guesses : {clipDetails?.totalDocuments}</div>
+              <div>Total guesses : {clipDetails.totalGuesses}</div>
               <span>|</span>
               <div>Actual rank : {clipDetails.clip.actualRank.name}</div>
             </div>
