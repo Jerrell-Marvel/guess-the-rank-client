@@ -104,10 +104,10 @@ const MyClips = () => {
         <div className="bg-slate-950 fixed top-0 left-0 right-0 bottom-0 bg-opacity-40 flex justify-center items-center spacing-x spacing-y z-[99]">
           <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-800 p-6 text-white rounded-md relative">
             <svg
-              clip-rule="evenodd"
+              fillRule="evenodd"
               fill-rule="evenodd"
-              stroke-linejoin="round"
-              stroke-miterlimit="2"
+              strokeLinejoin="round"
+              strokeMiterlimit="2"
               width={32}
               height={32}
               fill="white"

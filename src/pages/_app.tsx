@@ -8,14 +8,14 @@ import { ReactQueryDevtools } from "react-query/devtools";
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
-    <div className="flex justify-center bg-slate-950 pt-14">
-      <Navbar />
-      <div className="max-w-7xl w-full">
-        <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <div className="flex justify-center bg-slate-950 pt-14">
+        <Navbar />
+        <div className="max-w-7xl w-full">
           <Component {...pageProps} />
           <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
+        </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 }

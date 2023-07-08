@@ -1,10 +1,22 @@
+import { Categories } from "@/types/category";
 import Link from "next/link";
 import { useState } from "react";
+import { useQuery } from "react-query";
+import axios from "axios";
 
-const games = ["Valorant", "League of Legends", "CS:GO", "Apex Legends", "Overwatch", "Dota 2", "Rainbow Six Siege"];
+// const games = ["Valorant", "League of Legends", "CS:GO", "Apex Legends", "Overwatch", "Dota 2", "Rainbow Six Siege"];
 
 const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
+
+  const { data: categories } = useQuery<Categories>({
+    queryFn: async () => {
+      const response = await axios.get<Categories>("http://localhost:5000/api/v1/categories");
+
+      const data = response.data;
+      return data;
+    },
+  });
   return (
     <>
       <div className="w-full bg-slate-950 bg-opacity-75 fixed top-0 h-16 flex items-center spacing-x justify-end z-[999]">
@@ -27,10 +39,9 @@ const Navbar = () => {
         <div className={`w-full max-w-sm h-screen bg-slate-950 p-4 overflow-y-scroll text-white  transition-all duration-[400ms] ${isActive ? "translate-x-0" : "translate-x-full"} absolute z-[10000] right-0 top-0 rtl`}>
           <div className="w-full flex justify-end ltr">
             <svg
-              clip-rule="evenodd"
-              fill-rule="evenodd"
-              stroke-linejoin="round"
-              stroke-miterlimit="2"
+              fillRule="evenodd"
+              strokeLinejoin="round"
+              strokeMiterlimit="2"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
               fill="white"
@@ -71,13 +82,13 @@ const Navbar = () => {
             <span>Games</span>
           </div>
 
-          {games.map((game) => {
+          {categories?.map((category) => {
             return (
               <div
                 className="w-full block py-4 pr-2 pl-6 hover:bg-slate-800 rounded-md cursor-pointer ltr"
-                key={game}
+                key={category._id}
               >
-                {game}
+                {category.name}
               </div>
             );
           })}
