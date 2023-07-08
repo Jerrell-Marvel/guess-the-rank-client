@@ -4,7 +4,7 @@ export type CategorySchema = {
   name: string;
   imgUrl: string;
   description: string;
-  ranks: string[] | Rank[];
+  ranks: string[];
 };
 
 export type Category = CategorySchema & {

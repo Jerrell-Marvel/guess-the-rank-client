@@ -6,6 +6,7 @@ import axios from "axios";
 import { Rank } from "@/types/rank";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Clip } from "@/types/clip";
+import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
 
 type SubmitClipFnParams = {
   ytLink: string;
@@ -33,18 +34,18 @@ const Upload = () => {
     console.log(validYtLinkId);
   }, [ytLink]);
 
-  const { data: categories } = useQuery<CategoriesWithRanks, AxiosError>({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
-        params: {
-          ranks: "true",
-        },
-      });
-      const data = response.data;
-      return data;
-    },
-  });
+  // const { data: categories } = useQuery<CategoriesWithRanks, AxiosError>({
+  //   queryKey: ["categories"],
+  //   queryFn: async () => {
+  //     const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
+  //       params: {
+  //         ranks: "true",
+  //       },
+  //     });
+  //     const data = response.data;
+  //     return data;
+  //   },
+  // });
 
   const { mutate: submitClip } = useMutation<Clip, AxiosError, SubmitClipFnParams>({
     mutationFn: async ({ category, rank, ytLink }) => {
@@ -53,6 +54,14 @@ const Upload = () => {
       return data;
     },
   });
+
+  const handleCategoryItemClick = (category: CategoryWithRanks) => {
+    setSelectedCategory(category);
+    setSelectedRank(null);
+  };
+
+  // console.log(selectedCategory);
+
   return (
     <div className="min-h-screen flex items-center md:items-start">
       <div className="bg-slate-950 spacing-x spacing-y text-white grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
@@ -85,45 +94,7 @@ const Upload = () => {
           >
             {/* Form item */}
 
-            <div className="py-2 relative">
-              <label
-                className="mb-2 block"
-                htmlFor="game"
-              >
-                Game *
-              </label>
-              <div
-                id="game"
-                className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
-                onClick={() => {
-                  setIsCategoryActive((prev) => !prev);
-                  setIsRankActive(false);
-                }}
-              >
-                <span className="capitalize">{selectedCategory ? selectedCategory.name : "Select game"}</span>
-                <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
-              </div>
-
-              {isCategoryActive ? (
-                <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-                  {categories?.map((category) => {
-                    return (
-                      <li
-                        className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                        key={category.name}
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          setIsCategoryActive(false);
-                          setSelectedRank(null);
-                        }}
-                      >
-                        {category.name}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : null}
-            </div>
+            <CategoriesDropdown onItemClick={handleCategoryItemClick} />
 
             {selectedCategory ? (
               <>

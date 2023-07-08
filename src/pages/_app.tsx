@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex justify-center bg-slate-950 pt-14">
+      <div className="flex justify-center bg-slate-950 py-14">
         <Navbar />
         <div className="max-w-7xl w-full">
           <Component {...pageProps} />
