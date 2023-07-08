@@ -9,6 +9,7 @@ import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import Image from "next/image";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Rank } from "@/types/rank";
+import Link from "next/link";
 
 type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number; actualRank: Rank };
 
@@ -101,9 +102,12 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
             >
               <div className="py-3">Start</div>
             </button>
-            <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
-              <div className="py-3">Upload own clip</div>
-            </button>
+            <Link
+              className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400 block"
+              href="/upload"
+            >
+              <div className="py-3 text-center">Upload own clip</div>
+            </Link>
           </div>
         </>
       ) : submitResult ? (
@@ -200,12 +204,18 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           >
             <div className="py-3">Play again</div>
           </button>
-          <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
-            <div className="py-3">Upload own clip</div>
-          </button>
-          <button className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400">
-            <div className="py-3">Home</div>
-          </button>
+          <Link
+            className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400 block"
+            href="/upload"
+          >
+            <div className="py-3 text-center">Upload own clip</div>
+          </Link>
+          <Link
+            className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400 block"
+            href="/"
+          >
+            <div className="py-3 text-center">Home</div>
+          </Link>
         </>
       ) : (
         <>
