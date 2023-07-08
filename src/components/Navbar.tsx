@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
 
   const { data: categories } = useQuery<Categories>({
+    queryKey:["categories"],
     queryFn: async () => {
       const response = await axios.get<Categories>("http://localhost:5000/api/v1/categories");
 
