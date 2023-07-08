@@ -8,8 +8,9 @@ import { Clip } from "@/types/clip";
 import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import Image from "next/image";
 import { youtubeParser } from "@/utils/youtubeParser";
+import { Rank } from "@/types/rank";
 
-type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number };
+type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number; actualRank: Rank };
 
 type SubmitResult = {
   isCorrect: boolean;
@@ -21,6 +22,7 @@ type SubmitResult = {
     count: number;
     percentage: string;
   }[];
+  actualRank: Rank;
 };
 
 const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -29,7 +31,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
   // useEffect(() => {}, [router.query.category]);
 
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [selectedRank, setSelectedRank] = useState("");
+  const [selectedRank, setSelectedRank] = useState<Rank | null>(null);
   // const [isResultShow, setIsResultShow] = useState(false);
   // const [result, setResult] = useState();
 
@@ -53,14 +55,14 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
 
     onSuccess: (data) => {
       // setIsResultShow(true);
-      setSelectedRank("");
+      // setSelectedRank(null);
 
       const ranks = category.ranks.map((rank) => {
         const rankData = data.guesses.find((e) => e.rank._id == rank._id);
         return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
       });
 
-      const result: SubmitResult = { totalGuesses: data.totalGuesses, isCorrect: data.isCorrect, ranks };
+      const result: SubmitResult = { totalGuesses: data.totalGuesses, isCorrect: data.isCorrect, ranks, actualRank: data.actualRank };
 
       // console.log(result);
       setSubmitResult(result);
@@ -127,10 +129,12 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           <div className="w-full bg-slate-800 p-6 text-white rounded-md relative max-w-[640px]">
             <h3 className="text-paragraph font-semibold">Clip Details</h3>
             <h3 className="text-paragraph font-semibold">{JSON.stringify(submitResult.isCorrect)}</h3>
+            <div>your guesses : {selectedRank?.name}</div>
+            <div>correct rank : {submitResult.actualRank.name}</div>
 
             <div className="text-md md:text-lg my-2 text-slate-400 flex gap-2">
               <div>Total guesses : {submitResult.totalGuesses}</div>
-              <span>|</span>
+              {/* <div>Your guesses : {${selectedRank.}}</div> */}
               {/* <div>Actual rank : {submitResult.}</div> */}
             </div>
 
@@ -190,6 +194,7 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
             className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
               setSubmitResult(null);
+              setSelectedRank(null);
               getClip(category._id);
             }}
           >
@@ -222,8 +227,8 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
             return (
               <div
                 key={rank.name}
-                onClick={() => setSelectedRank(rank._id)}
-                className={`${selectedRank === rank._id ? "text-purple-400" : ""}`}
+                onClick={() => setSelectedRank(rank)}
+                className={`${selectedRank?._id === rank._id ? "text-purple-400" : ""}`}
               >
                 {rank.name}
               </div>
@@ -233,7 +238,9 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
           <button
             className="w-full bg-slate-800 font-semibold max-w-sm hover:text-blue-400"
             onClick={() => {
-              submitClip({ clipId: clip._id, rankGuess: selectedRank });
+              if (selectedRank) {
+                submitClip({ clipId: clip._id, rankGuess: selectedRank._id });
+              }
             }}
           >
             <div className="py-3">Submit</div>
