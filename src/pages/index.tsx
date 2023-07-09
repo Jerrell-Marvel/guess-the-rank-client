@@ -76,7 +76,7 @@ export default function Home({ categories }: InferGetStaticPropsType<typeof getS
             return (
               <Link
                 href={`/${category.name}`}
-                className="w-full group text-white rounded-md overflow-hidden"
+                className="w-full group text-white rounded-md overflow-hidden relative"
                 key={category.name}
               >
                 <div className="w-full relative aspect-[4/3] overflow-hidden">
@@ -91,7 +91,7 @@ export default function Home({ categories }: InferGetStaticPropsType<typeof getS
                 {/* <div className="h-1/2 absolute bottom-0 w-full bg-gradient-to-t to-transparent from-slate-900 bg-opacity-10"></div> */}
 
                 {/* <h4 className="text-4xl md:text-3xl font-bold uppercase absolute bottom-[10%] px-6">{category.name}</h4> */}
-                <h4 className="text-lg sm:text-2xl md:text-xl font-semibold uppercase p-4 bg-slate-900 group-hover:text-slate-400 transition duration-500">{category.name}</h4>
+                <h4 className="text-lg sm:text-2xl md:text-xl font-semibold uppercase p-4 bg-slate-800 absolute bottom-0 w-full bg-opacity-50">{category.name}</h4>
               </Link>
             );
           })}
