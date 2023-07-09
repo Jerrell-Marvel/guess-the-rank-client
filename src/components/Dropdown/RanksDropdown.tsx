@@ -2,29 +2,17 @@ import { CategoriesWithRanks, Category, CategoryWithRanks } from "@/types/catego
 import { useState } from "react";
 import { useQuery } from "react-query";
 import axios, { AxiosError } from "axios";
+import { Rank, Ranks } from "@/types/rank";
 
 type CategoriesDropdownProps = {
   onClick: () => void;
-  onItemClick: (category: CategoryWithRanks) => void;
-  isCategoryActive: boolean;
+  onItemClick: (rank: Rank) => void;
+  ranks: Ranks;
 };
 
-const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: CategoriesDropdownProps) => {
-  // const [isActive, setIsActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  const { data: categories } = useQuery<CategoriesWithRanks, AxiosError>({
-    queryKey: ["categories", "ranks"],
-    queryFn: async () => {
-      const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
-        params: {
-          ranks: "true",
-        },
-      });
-      const data = response.data;
-      return data;
-    },
-  });
+const RanksDropdown = ({ onItemClick, ranks, onClick }: CategoriesDropdownProps) => {
+  const [isActive, setIsActive] = useState(false);
+  const [selectedRank, setSelectedRank] = useState<string | null>(null);
 
   // console.log(categories);
 
@@ -34,39 +22,39 @@ const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: Categori
         className="mb-2 block"
         htmlFor="game"
       >
-        Game *
+        Rank *
       </label>
       <div
         id="game"
         className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
         onClick={() => {
+          setIsActive((prev) => !prev);
           onClick();
-          //   setIsActive((prev) => !prev);
           //   setIsCategoryActive((prev) => !prev);
           //   setIsRankActive(false);
         }}
       >
-        <span className="capitalize">{selectedCategory ? selectedCategory : "Select game"}</span>
+        <span className="capitalize">{selectedRank ? selectedRank : "Select rank"}</span>
         <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
       </div>
 
-      {isCategoryActive ? (
+      {isActive ? (
         <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-          {categories?.map((category) => {
+          {ranks.map((rank) => {
             return (
               <li
                 className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                key={category.name}
+                key={rank.name}
                 onClick={() => {
-                  setSelectedCategory(category.name);
-                  // setIsActive(false);
-                  onItemClick(category);
-                  //   setSelectedCategory(category);
+                  setSelectedRank(rank.name);
+                  setIsActive(false);
+                  onItemClick(rank);
+                  //   setselectedRank(category);
                   //   setIsCategoryActive(false);
                   //   setSelectedRank(null);
                 }}
               >
-                {category.name}
+                {rank.name}
               </li>
             );
           })}
@@ -76,4 +64,4 @@ const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: Categori
   );
 };
 
-export default CategoriesDropdown;
+export default RanksDropdown;

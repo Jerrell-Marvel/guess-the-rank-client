@@ -6,3 +6,5 @@ export type RankSchema = {
 export type Rank = RankSchema & {
   _id: string;
 };
+
+export type Ranks = Rank[];

@@ -7,6 +7,7 @@ import { Rank } from "@/types/rank";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Clip } from "@/types/clip";
 import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
+import RanksDropdown from "@/components/Dropdown/RanksDropdown";
 
 type SubmitClipFnParams = {
   ytLink: string;
@@ -55,9 +56,24 @@ const Upload = () => {
     },
   });
 
+  const handleCategoryClick = () => {
+    setIsCategoryActive((prev) => !prev);
+  };
+
   const handleCategoryItemClick = (category: CategoryWithRanks) => {
+    setIsCategoryActive(false);
     setSelectedCategory(category);
     setSelectedRank(null);
+  };
+
+  const handleRankClick = () => {
+    setIsCategoryActive(false);
+  };
+
+  const handleRankItemClick = (rank: Rank) => {
+    setIsRankActive((prev) => !prev);
+    setSelectedRank(rank);
+    setIsCategoryActive(false);
   };
 
   // console.log(selectedCategory);
@@ -94,7 +110,11 @@ const Upload = () => {
           >
             {/* Form item */}
 
-            <CategoriesDropdown onItemClick={handleCategoryItemClick} />
+            <CategoriesDropdown
+              onItemClick={handleCategoryItemClick}
+              onClick={handleCategoryClick}
+              isCategoryActive={isCategoryActive}
+            />
 
             {selectedCategory ? (
               <>
@@ -109,7 +129,7 @@ const Upload = () => {
                     id="#youtube-link"
                     type="text"
                     className="w-full py-3 px-3 bg-slate-800 rounded-md focus:outline-none"
-                    placeholder="e.g: youtube.com/pMoL2URoqhI"
+                    placeholder="e.g: youtube.com/WRz2MxhAdJo"
                     onChange={(e) => {
                       setYtLink(e.target.value);
                     }}
@@ -117,44 +137,11 @@ const Upload = () => {
                   />
                 </div>
 
-                <div className="py-2 relative">
-                  <label
-                    className="mb-2 block"
-                    htmlFor="rank"
-                  >
-                    Rank *
-                  </label>
-                  <div
-                    id="rank"
-                    className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
-                    onClick={() => {
-                      setIsRankActive((prev) => !prev);
-                      setIsCategoryActive(false);
-                    }}
-                  >
-                    <span className="capitalize">{selectedRank ? selectedRank.name : "Select rank"}</span>
-                    <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
-                  </div>
-
-                  {isRankActive ? (
-                    <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-                      {selectedCategory.ranks.map((rank) => {
-                        return (
-                          <li
-                            className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                            key={rank.name}
-                            onClick={() => {
-                              setSelectedRank(rank);
-                              setIsRankActive(false);
-                            }}
-                          >
-                            {rank.name}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : null}
-                </div>
+                <RanksDropdown
+                  onItemClick={handleRankItemClick}
+                  ranks={selectedCategory.ranks}
+                  onClick={handleRankClick}
+                />
               </>
             ) : null}
 
