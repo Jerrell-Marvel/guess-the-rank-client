@@ -44,7 +44,7 @@ html {
   }
 
   .spacing-y {
-    @apply py-0 md:py-0;
+    @apply py-6 md:py-12;
   }
 
   .rtl {

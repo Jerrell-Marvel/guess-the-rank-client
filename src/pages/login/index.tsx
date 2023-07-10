@@ -1,5 +1,9 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 const Login = () => {
+  const router = useRouter();
+
   return (
     <div className="flex justify-center min-h-screen items-center px-6">
       <div className="text-white flex justify-center items-center flex-col text-center gap-4 max-w-2xl p-6 bg-gray-700 rounded-md bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-20 border border-gray-100">
@@ -9,6 +13,14 @@ const Login = () => {
         <a
           href="http://localhost:5000/auth/google"
           className="border-slate-400 border-[1px] px-6 py-2 flex gap-4 hover:bg-slate-950 transition duration-100"
+          onClick={() => {
+            if (router.query.authCallbackURL) {
+              localStorage.setItem("authCallbackURL", router.query.authCallbackURL as string);
+            } else {
+              localStorage.setItem("authCallbackURL", "/");
+            }
+          }}
+          // target="_blank"
         >
           <Image
             src="/google.png"
