@@ -35,7 +35,7 @@ const MyClips = () => {
   const [isClipDetailActive, setIsClipDetailActive] = useState(false);
 
   const { data: categories } = useQuery<CategoriesWithRanks>({
-    queryKey: ["categories"],
+    queryKey: ["categories", "ranks"],
     queryFn: async () => {
       const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
         params: {
@@ -98,6 +98,10 @@ const MyClips = () => {
       });
 
       const result = { clip: data.clip, rankGuesses, totalGuesses: data.totalGuesses };
+
+      console.log(selectedCategory);
+      console.log(result);
+
       return result;
     },
 
@@ -106,6 +110,8 @@ const MyClips = () => {
     },
   });
 
+  // console.log(clipDetails);
+
   return (
     <>
       {clipDetails && isClipDetailActive ? (
@@ -113,7 +119,6 @@ const MyClips = () => {
           <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-800 p-6 text-white rounded-md relative">
             <svg
               fillRule="evenodd"
-              fill-rule="evenodd"
               strokeLinejoin="round"
               strokeMiterlimit="2"
               width={32}
@@ -142,50 +147,22 @@ const MyClips = () => {
             <div className="flex flex-col gap-2">
               {clipDetails?.rankGuesses.map((rank) => {
                 return (
-                  <>
-                    {/* <div
-                      key={rank._id}
-                      className="h-full flex flex-col justify-end"
-                    >
-                      <span>{rank.percentage}%</span>
-                      <div
-                        className={`bg-blue-400`}
-                        style={{ height: `${rank.percentage}%` }}
-                      ></div>
-                      <span>{rank.name}</span>
+                  <div
+                    key={rank._id}
+                    className=""
+                  >
+                    <div className="flex justify-between">
+                      <div>{rank.name}</div>
+                      <div>{rank.percentage}%</div>
                     </div>
 
-                    <div
-                      key={rank._id}
-                      className="h-full flex flex-col justify-end"
-                    >
-                      <span>{rank.percentage}%</span>
+                    <div className="bg-slate-700">
                       <div
-                        className={`bg-blue-400`}
-                        style={{ height: `${rank.percentage}%` }}
+                        className={`bg-blue-400 h-6 rounded-sm`}
+                        style={{ width: `${rank.percentage}%` }}
                       ></div>
-                      <span>{rank.name}</span>
-                    </div> */}
-
-                    <div
-                      key={rank._id}
-                      className=""
-                    >
-                      <div className="flex justify-between">
-                        <div>{rank.name}</div>
-                        <div>{rank.percentage}%</div>
-                      </div>
-
-                      <div className="bg-slate-700">
-                        <div
-                          className={`bg-blue-400 h-6 rounded-sm`}
-                          style={{ width: `${rank.percentage}%` }}
-                        ></div>
-                      </div>
-
-                      {/* <span>{rank.name}</span> */}
                     </div>
-                  </>
+                  </div>
                 );
               })}
             </div>
@@ -232,7 +209,8 @@ const MyClips = () => {
                   return (
                     <li
                       className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                      key={category.name}
+                      // key={category._id}
+                      key={category._id}
                       onClick={() => {
                         setSelectedCategory(category);
 

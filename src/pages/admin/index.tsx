@@ -50,7 +50,7 @@ const AdminPage = () => {
   const queryClient = useQueryClient();
 
   const { data: categories } = useQuery<CategoriesWithRanks>({
-    queryKey: ["categories"],
+    queryKey: ["categories", "ranks"],
     queryFn: async () => {
       const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
         params: {
@@ -147,7 +147,6 @@ const AdminPage = () => {
           <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-800 p-6 text-white rounded-md relative">
             <svg
               fillRule="evenodd"
-              fill-rule="evenodd"
               strokeLinejoin="round"
               strokeMiterlimit="2"
               width={32}
@@ -174,50 +173,24 @@ const AdminPage = () => {
             <div className="flex flex-col gap-2">
               {clipDetails?.rankGuesses.map((rank) => {
                 return (
-                  <>
-                    {/* <div
-                      key={rank._id}
-                      className="h-full flex flex-col justify-end"
-                    >
-                      <span>{rank.percentage}%</span>
-                      <div
-                        className={`bg-blue-400`}
-                        style={{ height: `${rank.percentage}%` }}
-                      ></div>
-                      <span>{rank.name}</span>
+                  <div
+                    key={rank._id}
+                    className=""
+                  >
+                    <div className="flex justify-between">
+                      <div>{rank.name}</div>
+                      <div>{rank.percentage}%</div>
                     </div>
 
-                    <div
-                      key={rank._id}
-                      className="h-full flex flex-col justify-end"
-                    >
-                      <span>{rank.percentage}%</span>
+                    <div className="bg-slate-700">
                       <div
-                        className={`bg-blue-400`}
-                        style={{ height: `${rank.percentage}%` }}
+                        className={`bg-blue-400 h-6 rounded-sm`}
+                        style={{ width: `${rank.percentage}%` }}
                       ></div>
-                      <span>{rank.name}</span>
-                    </div> */}
-
-                    <div
-                      key={rank._id}
-                      className=""
-                    >
-                      <div className="flex justify-between">
-                        <div>{rank.name}</div>
-                        <div>{rank.percentage}%</div>
-                      </div>
-
-                      <div className="bg-slate-700">
-                        <div
-                          className={`bg-blue-400 h-6 rounded-sm`}
-                          style={{ width: `${rank.percentage}%` }}
-                        ></div>
-                      </div>
-
-                      {/* <span>{rank.name}</span> */}
                     </div>
-                  </>
+
+                    {/* <span>{rank.name}</span> */}
+                  </div>
                 );
               })}
             </div>
