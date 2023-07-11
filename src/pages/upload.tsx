@@ -8,6 +8,7 @@ import { youtubeParser } from "@/utils/youtubeParser";
 import { Clip } from "@/types/clip";
 import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
 import RanksDropdown from "@/components/Dropdown/RanksDropdown";
+import { useRouter } from "next/router";
 
 type SubmitClipFnParams = {
   ytLink: string;
@@ -26,7 +27,7 @@ const Upload = () => {
   const [validYtLinkId, setValidYtLinkId] = useState("");
 
   // const pRef = useRef<HTMLDivElement | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const ytId = youtubeParser(ytLink);
     if (ytId) {
@@ -54,6 +55,12 @@ const Upload = () => {
       const data = response.data;
       return data;
     },
+
+    onError: (err) => {
+      if (err.response?.status === 403) {
+        router.push("/login?cbURL=upload");
+      }
+    },
   });
 
   const handleCategoryClick = () => {
@@ -80,7 +87,7 @@ const Upload = () => {
 
   return (
     <div className="min-h-screen flex items-center md:items-start">
-      <div className="bg-slate-950 spacing-x spacing-y text-white grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
+      <div className="bg-slate-950 page-spacing-x page-spacing-y text-white grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
         {/* yt frame */}
         <div className="flex items-center w-full md:col-[1/4] md:items-start flex-col">
           <div className="w-full bg-red-200 aspect-[560/315]">

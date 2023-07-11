@@ -14,10 +14,10 @@ const Login = () => {
           href="http://localhost:5000/auth/google"
           className="border-slate-400 border-[1px] px-6 py-2 flex gap-4 hover:bg-slate-950 transition duration-100"
           onClick={() => {
-            if (router.query.authCallbackURL) {
-              localStorage.setItem("authCallbackURL", router.query.authCallbackURL as string);
+            if (router.query.cbURL) {
+              localStorage.setItem("cbURL", router.query.cbURL as string);
             } else {
-              localStorage.setItem("authCallbackURL", "/");
+              localStorage.setItem("cbURL", "/");
             }
           }}
           // target="_blank"

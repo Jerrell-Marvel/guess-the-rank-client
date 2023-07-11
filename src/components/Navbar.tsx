@@ -10,7 +10,7 @@ const Navbar = () => {
   const [isActive, setIsActive] = useState(false);
 
   const { data: categories } = useQuery<Categories>({
-    queryKey:["categories"],
+    queryKey: ["categories"],
     queryFn: async () => {
       const response = await axios.get<Categories>("http://localhost:5000/api/v1/categories");
 
@@ -20,7 +20,7 @@ const Navbar = () => {
   });
   return (
     <>
-      <div className="w-full bg-slate-950 bg-opacity-75 fixed top-0 h-16 flex items-center spacing-x justify-end z-[999]">
+      <div className="w-full bg-slate-950 bg-opacity-75 fixed top-0 h-16 flex items-center page-spacing-x justify-end z-[999]">
         <div
           className="w-6 h-6 z-[9999] cursor-pointer flex flex-col justify-around"
           onClick={() => setIsActive(true)}

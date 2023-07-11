@@ -62,7 +62,7 @@ const MyClips = () => {
     }
   }, [router.isReady, categories]);
 
-  const { data: clips } = useQuery<Clips>({
+  const { data: clips } = useQuery<Clips, AxiosError>({
     queryKey: ["clips", selectedCategory?.name, activeStatus],
     queryFn: async () => {
       const response = await axios.get<Clips>("http://localhost:5000/api/v1/clips", {
@@ -76,6 +76,14 @@ const MyClips = () => {
       return data;
     },
     enabled: !!selectedCategory,
+
+    onError: (err) => {
+      const currPath = router.asPath.slice(1);
+      console.log(currPath);
+      if (err.response?.status == 403) {
+        router.push(`/login?cbURL=${currPath}`);
+      }
+    },
   });
 
   const { data: clipDetails, mutate: getClipDetails } = useMutation<A, AxiosError, string>({
@@ -101,7 +109,7 @@ const MyClips = () => {
   return (
     <>
       {clipDetails && isClipDetailActive ? (
-        <div className="bg-slate-950 fixed top-0 left-0 right-0 bottom-0 bg-opacity-40 flex justify-center items-center spacing-x spacing-y z-[99]">
+        <div className="bg-slate-950 fixed top-0 left-0 right-0 bottom-0 bg-opacity-40 flex justify-center items-center page-spacing-x page-spacing-y z-[99]">
           <div className="w-[85%] md:w-1/2 max-w-[640px] max-h-[80vh] bg-slate-800 p-6 text-white rounded-md relative">
             <svg
               fillRule="evenodd"
@@ -185,7 +193,7 @@ const MyClips = () => {
         </div>
       ) : null}
 
-      <div className="text-white spacing-x spacing-y">
+      <div className="text-white page-spacing-x page-spacing-y">
         <h1 className="text-paragraph font-bold">My Clips</h1>
         <p className="text-slate-400 my-2">
           To access game clips, please select a game category first. Once you have chosen a game category, you can browse through existing submitted clips. If you do not have any clips yet, you can{" "}

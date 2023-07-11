@@ -39,6 +39,14 @@ html {
     clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%) !important;
   }
 
+  .page-spacing-x {
+    @apply px-4 md:px-8;
+  }
+
+  .page-spacing-y {
+    @apply py-20 md:py-[104px];
+  }
+
   .spacing-x {
     @apply px-4 md:px-8;
   }
