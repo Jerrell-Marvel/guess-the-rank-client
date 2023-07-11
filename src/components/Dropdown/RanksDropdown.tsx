@@ -1,5 +1,5 @@
 import { CategoriesWithRanks, Category, CategoryWithRanks } from "@/types/category";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import axios, { AxiosError } from "axios";
 import { Rank, Ranks } from "@/types/rank";
@@ -15,6 +15,10 @@ const RanksDropdown = ({ onItemClick, ranks, onClick }: CategoriesDropdownProps)
   const [selectedRank, setSelectedRank] = useState<string | null>(null);
 
   // console.log(categories);
+
+  useEffect(() => {
+    setSelectedRank(null);
+  }, [ranks]);
 
   return (
     <div className="py-2 relative">

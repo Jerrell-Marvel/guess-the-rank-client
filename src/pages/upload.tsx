@@ -9,6 +9,7 @@ import { Clip } from "@/types/clip";
 import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
 import RanksDropdown from "@/components/Dropdown/RanksDropdown";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 type SubmitClipFnParams = {
   ytLink: string;
@@ -32,6 +33,8 @@ const Upload = () => {
     const ytId = youtubeParser(ytLink);
     if (ytId) {
       setValidYtLinkId(ytId);
+    } else {
+      setValidYtLinkId("");
     }
     console.log(validYtLinkId);
   }, [ytLink]);
@@ -57,11 +60,41 @@ const Upload = () => {
     },
 
     onError: (err) => {
+      console.log(err);
       if (err.response?.status === 403) {
         router.push("/login?cbURL=upload");
+      } else {
+        toast.error("Something went wrong, please try again later.");
       }
     },
+
+    onSuccess: () => {
+      router.push(`/myclips?categoryId=${selectedCategory!._id}&status=pending`);
+      toast.success("Clip uploaded, waiting for verification.");
+    },
   });
+
+  const handleSubmit = () => {
+    console.log(validYtLinkId);
+
+    if (!selectedCategory) {
+      return toast.error("Game must be selected.");
+    }
+
+    if (!ytLink) {
+      return toast.error("Youtube link cannot be empty.");
+    }
+
+    if (!validYtLinkId) {
+      return toast.error("Invalid youtube link.");
+    }
+
+    if (!selectedRank) {
+      return toast.error("Rank must be selected.");
+    }
+
+    return submitClip({ rank: selectedRank._id, category: selectedCategory._id, ytLink: `https://youtu.be/${validYtLinkId}` });
+  };
 
   const handleCategoryClick = () => {
     setIsCategoryActive((prev) => !prev);
@@ -110,9 +143,7 @@ const Upload = () => {
             onSubmit={(e) => {
               e.preventDefault();
 
-              if (selectedRank && selectedCategory && validYtLinkId) {
-                submitClip({ rank: selectedRank._id, category: selectedCategory._id, ytLink: `https://youtu.be/${validYtLinkId}` });
-              }
+              handleSubmit();
             }}
           >
             {/* Form item */}
