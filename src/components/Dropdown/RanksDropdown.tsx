@@ -4,21 +4,23 @@ import { useQuery } from "react-query";
 import axios, { AxiosError } from "axios";
 import { Rank, Ranks } from "@/types/rank";
 
-type CategoriesDropdownProps = {
+type RankDropdownProps = {
   onClick: () => void;
   onItemClick: (rank: Rank) => void;
+  isActive: boolean;
+  selectedRank: Rank | null;
   ranks: Ranks;
 };
 
-const RanksDropdown = ({ onItemClick, ranks, onClick }: CategoriesDropdownProps) => {
-  const [isActive, setIsActive] = useState(false);
-  const [selectedRank, setSelectedRank] = useState<string | null>(null);
+const RanksDropdown = ({ onItemClick, ranks, onClick, isActive, selectedRank }: RankDropdownProps) => {
+  // const [isActive, setIsActive] = useState(false);
+  // const [selectedRank, setSelectedRank] = useState<string | null>(null);
 
   // console.log(categories);
 
-  useEffect(() => {
-    setSelectedRank(null);
-  }, [ranks]);
+  // useEffect(() => {
+  //   setSelectedRank(null);
+  // }, [ranks]);
 
   return (
     <div className="py-2 relative">
@@ -32,13 +34,13 @@ const RanksDropdown = ({ onItemClick, ranks, onClick }: CategoriesDropdownProps)
         id="game"
         className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
         onClick={() => {
-          setIsActive((prev) => !prev);
+          // setIsActive((prev) => !prev);
           onClick();
           //   setIsCategoryActive((prev) => !prev);
           //   setIsRankActive(false);
         }}
       >
-        <span className="capitalize">{selectedRank ? selectedRank : "Select rank"}</span>
+        <span className="capitalize">{selectedRank ? selectedRank.name : "Select rank"}</span>
         <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
       </div>
 
@@ -50,8 +52,8 @@ const RanksDropdown = ({ onItemClick, ranks, onClick }: CategoriesDropdownProps)
                 className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
                 key={rank.name}
                 onClick={() => {
-                  setSelectedRank(rank.name);
-                  setIsActive(false);
+                  // setSelectedRank(rank.name);
+                  // setIsActive(false);
                   onItemClick(rank);
                   //   setselectedRank(category);
                   //   setIsCategoryActive(false);

@@ -21,9 +21,9 @@ const games = ["Valorant", "Cs Go", "Fortnite", "Rocket Leagues", "Apex Legends"
 const Upload = () => {
   const [isCategoryActive, setIsCategoryActive] = useState(false);
   const [isRankActive, setIsRankActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null>(null);
   const [selectedRank, setSelectedRank] = useState<Rank | null>(null);
 
+  const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null>(null);
   const [ytLink, setYtLink] = useState("");
   const [validYtLinkId, setValidYtLinkId] = useState("");
 
@@ -38,19 +38,6 @@ const Upload = () => {
     }
     console.log(validYtLinkId);
   }, [ytLink]);
-
-  // const { data: categories } = useQuery<CategoriesWithRanks, AxiosError>({
-  //   queryKey: ["categories"],
-  //   queryFn: async () => {
-  //     const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
-  //       params: {
-  //         ranks: "true",
-  //       },
-  //     });
-  //     const data = response.data;
-  //     return data;
-  //   },
-  // });
 
   const { mutate: submitClip } = useMutation<Clip, AxiosError, SubmitClipFnParams>({
     mutationFn: async ({ category, rank, ytLink }) => {
@@ -98,6 +85,7 @@ const Upload = () => {
 
   const handleCategoryClick = () => {
     setIsCategoryActive((prev) => !prev);
+    setIsRankActive(false);
   };
 
   const handleCategoryItemClick = (category: CategoryWithRanks) => {
@@ -108,15 +96,18 @@ const Upload = () => {
 
   const handleRankClick = () => {
     setIsCategoryActive(false);
+    setIsRankActive((prev) => !prev);
   };
 
   const handleRankItemClick = (rank: Rank) => {
-    setIsRankActive((prev) => !prev);
+    setIsRankActive(false);
     setSelectedRank(rank);
-    setIsCategoryActive(false);
+    // setIsCategoryActive(false);
   };
 
   // console.log(selectedCategory);
+
+  // console.log(isRankActive);
 
   return (
     <div className="min-h-screen flex items-center md:items-start">
@@ -151,7 +142,8 @@ const Upload = () => {
             <CategoriesDropdown
               onItemClick={handleCategoryItemClick}
               onClick={handleCategoryClick}
-              isCategoryActive={isCategoryActive}
+              isActive={isCategoryActive}
+              activeCategory={selectedCategory}
             />
 
             {selectedCategory ? (
@@ -179,6 +171,8 @@ const Upload = () => {
                   onItemClick={handleRankItemClick}
                   ranks={selectedCategory.ranks}
                   onClick={handleRankClick}
+                  isActive={isRankActive}
+                  selectedRank={selectedRank}
                 />
               </>
             ) : null}

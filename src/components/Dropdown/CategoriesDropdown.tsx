@@ -1,17 +1,23 @@
 import { CategoriesWithRanks, Category, CategoryWithRanks } from "@/types/category";
-import { useState } from "react";
+import { use, useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useQuery } from "react-query";
 import axios, { AxiosError } from "axios";
+import { useRouter } from "next/router";
 
 type CategoriesDropdownProps = {
   onClick: () => void;
   onItemClick: (category: CategoryWithRanks) => void;
-  isCategoryActive: boolean;
+  isActive: boolean;
+  activeCategory: CategoryWithRanks | null;
+  setActiveCategory?: Dispatch<SetStateAction<CategoryWithRanks | null>>;
+  allowQueryParam?: boolean;
 };
 
-const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: CategoriesDropdownProps) => {
+const CategoriesDropdown = ({ onItemClick, isActive, onClick, activeCategory, allowQueryParam = false, setActiveCategory }: CategoriesDropdownProps) => {
   // const [isActive, setIsActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  // const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null | undefined>(activeCategory);
+
+  const router = useRouter();
 
   const { data: categories } = useQuery<CategoriesWithRanks, AxiosError>({
     queryKey: ["categories", "ranks"],
@@ -26,7 +32,29 @@ const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: Categori
     },
   });
 
-  // console.log(categories);
+  useEffect(() => {
+    // console.log("==========================");
+    // console.log(router.isReady);
+    // console.log(categories);
+    // console.log(allowQueryParam);
+    // console.log(setActiveCategory);
+    if (allowQueryParam && router.isReady && router.query.categoryId && categories && setActiveCategory) {
+      console.log("here");
+      const activeCategory = categories.find((category) => category._id === router.query.categoryId);
+      if (activeCategory) {
+        setActiveCategory(activeCategory);
+      }
+    }
+    // if (router.query.status === "pending") {
+    //   setActiveStatus("pending");
+    // }
+  }, [allowQueryParam, router.isReady, setActiveCategory, router.query.categoryId, categories]);
+
+  // useEffect(() => {
+  //   if (activeCategory) {
+  //     setSelectedCategory(activeCategory);
+  //   }
+  // }, [activeCategory]);
 
   return (
     <div className="py-2 relative">
@@ -42,15 +70,16 @@ const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: Categori
         onClick={() => {
           onClick();
           //   setIsActive((prev) => !prev);
-          //   setIsCategoryActive((prev) => !prev);
+          //   setisActive((prev) => !prev);
           //   setIsRankActive(false);
         }}
       >
-        <span className="capitalize">{selectedCategory ? selectedCategory : "Select game"}</span>
+        {/* <div>{JSON.stringify(selectedCategory)}</div> */}
+        <span className="capitalize">{activeCategory ? activeCategory.name : "Select game"}</span>
         <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
       </div>
 
-      {isCategoryActive ? (
+      {isActive ? (
         <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
           {categories?.map((category) => {
             return (
@@ -58,11 +87,11 @@ const CategoriesDropdown = ({ onItemClick, isCategoryActive, onClick }: Categori
                 className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
                 key={category.name}
                 onClick={() => {
-                  setSelectedCategory(category.name);
+                  // setSelectedCategory(category);
                   // setIsActive(false);
                   onItemClick(category);
                   //   setSelectedCategory(category);
-                  //   setIsCategoryActive(false);
+                  //   setisActive(false);
                   //   setSelectedRank(null);
                 }}
               >
