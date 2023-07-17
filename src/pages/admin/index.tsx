@@ -9,6 +9,8 @@ import { addQueryParams } from "@/utils/AddQueryParams";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import { Rank } from "@/types/rank";
+import StatusDropdown from "@/components/Dropdown/StatusDropdown";
+import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
 
 const status = ["pending", "verified"];
 type GetClipDetailsResponse = { clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number };
@@ -41,7 +43,7 @@ type A = {
 const AdminPage = () => {
   const router = useRouter();
   //   const queryClient = useQueryClient();
-  const [activeStatus, setActiveStatus] = useState<string>(() => (router.query.status as string) || "pending");
+  const [activeStatus, setActiveStatus] = useState<"pending" | "verified">("pending");
   const [isStatusActive, setIsStatusActive] = useState(false);
   const [isCategoryActive, setIsCategoryActive] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null>(null);
@@ -49,33 +51,25 @@ const AdminPage = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: categories } = useQuery<CategoriesWithRanks>({
-    queryKey: ["categories", "ranks"],
-    queryFn: async () => {
-      const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
-        params: {
-          ranks: "true",
-        },
-      });
-      const data = response.data;
+  // const { data: categories } = useQuery<CategoriesWithRanks>({
+  //   queryKey: ["categories", "ranks"],
+  //   queryFn: async () => {
+  //     const response = await axios.get<CategoriesWithRanks>("http://localhost:5000/api/v1/categories", {
+  //       params: {
+  //         ranks: "true",
+  //       },
+  //     });
+  //     const data = response.data;
 
-      return data;
-    },
-  });
+  //     return data;
+  //   },
+  // });
 
   useEffect(() => {
-    if (router.isReady && categories) {
-      const activeCategory = categories.find((category) => category._id === router.query.categoryId);
-
-      if (activeCategory) {
-        setSelectedCategory(activeCategory);
-      }
-    }
-
     if (router.query.status === "verified") {
       setActiveStatus("verified");
     }
-  }, [router.isReady, categories]);
+  }, [router.isReady]);
 
   const { data: clips } = useQuery<Clips>({
     queryKey: ["clips", selectedCategory?.name, activeStatus],
@@ -139,6 +133,32 @@ const AdminPage = () => {
       }
     },
   });
+
+  const handleCategoryClick = () => {
+    setIsCategoryActive((prev) => !prev);
+    setIsStatusActive(false);
+  };
+
+  const handleCategoryItemClick = (category: CategoryWithRanks) => {
+    setSelectedCategory(category);
+
+    const newUrl = addQueryParams(window.location.href, "categoryId", category._id);
+    router.push(newUrl);
+
+    setIsCategoryActive(false);
+  };
+
+  const handleStatusClick = () => {
+    setIsStatusActive((prev) => !prev);
+    setIsCategoryActive(false);
+  };
+
+  const handleStatusItemClick = (stat: "pending" | "verified") => {
+    setIsStatusActive(false);
+    setActiveStatus(stat);
+    const newUrl = addQueryParams(window.location.href, "status", stat);
+    router.push(newUrl);
+  };
 
   return (
     <>
@@ -211,92 +231,21 @@ const AdminPage = () => {
           to upload{" "}
         </p>
         <div className="grid grid-cols-2 gap-4">
-          <div className="py-2 relative">
-            <label
-              className="mb-2 block"
-              htmlFor="game"
-            >
-              Game
-            </label>
-            <div
-              id="game"
-              className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
-              onClick={() => {
-                setIsCategoryActive((prev) => !prev);
-                setIsStatusActive(false);
-                // setIsRankActive(false);
-              }}
-            >
-              <span className="capitalize">{selectedCategory ? selectedCategory.name : "Select game"}</span>
-              <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
-            </div>
+          <CategoriesDropdown
+            onClick={handleCategoryClick}
+            onItemClick={handleCategoryItemClick}
+            isActive={isCategoryActive}
+            activeCategory={selectedCategory}
+            allowQueryParam={true}
+            setActiveCategory={setSelectedCategory}
+          />
 
-            {isCategoryActive ? (
-              <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-                {categories?.map((category) => {
-                  return (
-                    <li
-                      className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                      key={category.name}
-                      onClick={() => {
-                        setSelectedCategory(category);
-
-                        const newUrl = addQueryParams(window.location.href, "categoryId", category._id);
-                        router.push(newUrl);
-
-                        setIsCategoryActive(false);
-                      }}
-                    >
-                      {category.name}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
-          </div>
-
-          <div className="py-2 relative">
-            <label
-              className="mb-2 block"
-              htmlFor="game"
-            >
-              Status
-            </label>
-            <div
-              id="game"
-              className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
-              onClick={() => {
-                setIsStatusActive((prev) => !prev);
-                setIsCategoryActive(false);
-                // setIsRankActive(false);
-              }}
-            >
-              <span className="capitalize">{activeStatus}</span>
-              <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
-            </div>
-
-            {isStatusActive ? (
-              <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-                {status.map((stat) => {
-                  return (
-                    <li
-                      className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                      key={stat}
-                      onClick={() => {
-                        // setSelectedCategory(category);
-                        setIsStatusActive(false);
-                        setActiveStatus(stat);
-                        const newUrl = addQueryParams(window.location.href, "status", stat);
-                        router.push(newUrl);
-                      }}
-                    >
-                      {stat}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
-          </div>
+          <StatusDropdown
+            activeStatus={activeStatus}
+            isStatusActive={isStatusActive}
+            onClick={handleStatusClick}
+            onItemClick={handleStatusItemClick}
+          />
         </div>
 
         {clips?.length === 0 ? (

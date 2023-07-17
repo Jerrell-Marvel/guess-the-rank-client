@@ -10,6 +10,7 @@ import { youtubeParser } from "@/utils/youtubeParser";
 import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import { Rank } from "@/types/rank";
 import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
+import StatusDropdown from "@/components/Dropdown/StatusDropdown";
 
 const status = ["pending", "verified"];
 type GetClipDetailsResponse = { clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number };
@@ -29,7 +30,7 @@ type A = {
 const MyClips = () => {
   const router = useRouter();
   //   const queryClient = useQueryClient();
-  const [activeStatus, setActiveStatus] = useState<string>("verified");
+  const [activeStatus, setActiveStatus] = useState<"pending" | "verified">("verified");
   const [isStatusActive, setIsStatusActive] = useState(false);
   const [isCategoryActive, setIsCategoryActive] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryWithRanks | null>(null);
@@ -51,19 +52,11 @@ const MyClips = () => {
   //   },
   // });
 
-  // useEffect(() => {
-  //   if (router.isReady && categories) {
-  //     const activeCategory = categories.find((category) => category._id === router.query.categoryId);
-
-  //     if (activeCategory) {
-  //       setSelectedCategory(activeCategory);
-  //     }
-  //   }
-
-  //   if (router.query.status === "pending") {
-  //     setActiveStatus("pending");
-  //   }
-  // }, [router.isReady, categories]);
+  useEffect(() => {
+    if (router.query.status === "pending") {
+      setActiveStatus("pending");
+    }
+  }, [router.isReady]);
 
   const { data: clips } = useQuery<Clips, AxiosError>({
     queryKey: ["clips", selectedCategory?.name, activeStatus],
@@ -127,6 +120,18 @@ const MyClips = () => {
     router.push(newUrl);
 
     setIsCategoryActive(false);
+  };
+
+  const handleStatusClick = () => {
+    setIsStatusActive((prev) => !prev);
+    setIsCategoryActive(false);
+  };
+
+  const handleStatusItemClick = (stat: "pending" | "verified") => {
+    setIsStatusActive(false);
+    setActiveStatus(stat);
+    const newUrl = addQueryParams(window.location.href, "status", stat);
+    router.push(newUrl);
   };
 
   return (
@@ -209,48 +214,12 @@ const MyClips = () => {
             setActiveCategory={setSelectedCategory}
           />
 
-          <div className="py-2 relative">
-            <label
-              className="mb-2 block"
-              htmlFor="game"
-            >
-              Status
-            </label>
-            <div
-              id="game"
-              className="flex items-center justify-between py-3 cursor-pointer bg-slate-800 px-3 rounded-md"
-              onClick={() => {
-                setIsStatusActive((prev) => !prev);
-                setIsCategoryActive(false);
-                // setIsRankActive(false);
-              }}
-            >
-              <span className="capitalize">{activeStatus}</span>
-              <i className="h-3 w-3 -mt-[3px] border-r-2 border-b-2 border-white rotate-45 ml-1"></i>
-            </div>
-
-            {isStatusActive ? (
-              <ul className="p-3 flex flex-col gap-3 w-full bg-slate-800 mt-2 rounded-md absolute max-h-[244px] overflow-auto z-50">
-                {status.map((stat) => {
-                  return (
-                    <li
-                      className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
-                      key={stat}
-                      onClick={() => {
-                        // setSelectedCategory(category);
-                        setIsStatusActive(false);
-                        setActiveStatus(stat);
-                        const newUrl = addQueryParams(window.location.href, "status", stat);
-                        router.push(newUrl);
-                      }}
-                    >
-                      {stat}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
-          </div>
+          <StatusDropdown
+            activeStatus={activeStatus}
+            isStatusActive={isStatusActive}
+            onClick={handleStatusClick}
+            onItemClick={handleStatusItemClick}
+          />
         </div>
 
         {clips?.length === 0 ? (
