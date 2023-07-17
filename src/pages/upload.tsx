@@ -110,8 +110,8 @@ const Upload = () => {
   // console.log(isRankActive);
 
   return (
-    <div className="min-h-screen flex items-center md:items-start">
-      <div className="bg-slate-950 page-spacing-x page-spacing-y text-white grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
+    <div className="min-h-screen flex items-center md:items-start page-spacing-x page-spacing-y">
+      <div className="bg-slate-950 text-white grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
         {/* yt frame */}
         <div className="flex items-center w-full md:col-[1/4] md:items-start flex-col">
           <div className="w-full bg-red-200 aspect-[560/315]">

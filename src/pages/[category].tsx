@@ -10,6 +10,7 @@ import Image from "next/image";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Rank } from "@/types/rank";
 import Link from "next/link";
+import LoadingSpinner from "@/components/Spinner/LoadingSpinner";
 
 type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number; actualRank: Rank };
 
@@ -38,7 +39,11 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
 
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
 
-  const { data: clip, mutate: getClip } = useMutation<Clip, AxiosError, string>({
+  const {
+    data: clip,
+    mutate: getClip,
+    isLoading: isGetClipLoading,
+  } = useMutation<Clip, AxiosError, string>({
     mutationFn: async (category) => {
       const response = await axios.get<Clip>(`http://localhost:5000/api/v1/clip/${category}`);
       const data = response.data;
@@ -70,8 +75,16 @@ const CategoryPage = ({ category }: InferGetStaticPropsType<typeof getStaticProp
     },
   });
 
+  if (isGetClipLoading) {
+    return (
+      <div className=" w-full border-white flex items-center text-white flex-col min-h-screen justify-center gap-6 page-spacing-x page-spacing-y ">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
-    <div className=" w-full border-white flex items-center text-white flex-col min-h-screen justify-center gap-6 px-4 md:px-8 py-6 md:py-12">
+    <div className=" w-full border-white flex items-center text-white flex-col min-h-screen justify-center gap-6 page-spacing-x page-spacing-y">
       {!clip ? (
         <>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase font-bold">{category.name}</h2>
