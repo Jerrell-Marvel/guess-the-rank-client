@@ -9,9 +9,10 @@ import { addQueryParams } from "@/utils/AddQueryParams";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import { Rank } from "@/types/rank";
-import StatusDropdown from "@/components/Dropdown/StatusDropdown";
-import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
-import ClipDetails from "@/components/Modals/ClipDetails";
+import StatusDropdown from "@/components/dropdown/StatusDropdown";
+import CategoriesDropdown from "@/components/dropdown/CategoriesDropdown";
+import ClipDetails from "@/components/modals/ClipDetails";
+import YoutubeCardSkeleton from "@/components/skeleton/YoutubeCardSkeleton";
 
 const status = ["pending", "verified"];
 type GetClipDetailsResponse = { clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number };
@@ -72,7 +73,11 @@ const AdminPage = () => {
     }
   }, [router.isReady]);
 
-  const { data: clips } = useQuery<Clips>({
+  const {
+    data: clips,
+    isLoading: isClipsLoading,
+    isError: isClipsError,
+  } = useQuery<Clips>({
     queryKey: ["clips", selectedCategory?.name, activeStatus],
     queryFn: async () => {
       const response = await axios.get<Clips>("http://localhost:5000/api/v1/clips", {
@@ -215,68 +220,74 @@ const AdminPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-            {clips?.map((clip) => {
-              return (
-                <div
-                  className="w-full aspect-[560/315] bg-slate-800 rounded-md"
-                  key={clip._id}
-                >
-                  <iframe
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${youtubeParser(clip.link)}`}
-                    title="YouTube video player"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-
-                  {clip.status === "verified" ? (
+            {isClipsLoading
+              ? Array(10)
+                  .fill(true)
+                  .map((e, i) => {
+                    return <YoutubeCardSkeleton key={Date.now() + i} />;
+                  })
+              : clips?.map((clip) => {
+                  return (
                     <div
-                      className="p-4 font-medium flex justify-end items-center group cursor-pointer"
-                      onClick={() => {
-                        getClipDetails(clip._id);
-                      }}
+                      className="w-full aspect-[560/315] bg-slate-800 rounded-md"
+                      key={clip._id}
                     >
-                      <div className="flex gap-1 items-center group-hover:translate-x-[4px] transition duration-300">
-                        <span> See details</span>
+                      <iframe
+                        width="560"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${youtubeParser(clip.link)}`}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
 
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="white"
-                          className="-mb-[1px]"
+                      {clip.status === "verified" ? (
+                        <div
+                          className="p-4 font-medium flex justify-end items-center group cursor-pointer"
+                          onClick={() => {
+                            getClipDetails(clip._id);
+                          }}
                         >
-                          <path d="M10.024 4h6.015l7.961 8-7.961 8h-6.015l7.961-8-7.961-8zm-10.024 16h6.015l7.961-8-7.961-8h-6.015l7.961 8-7.961 8z" />
-                        </svg>
-                      </div>
+                          <div className="flex gap-1 items-center group-hover:translate-x-[4px] transition duration-300">
+                            <span> See details</span>
+
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="white"
+                              className="-mb-[1px]"
+                            >
+                              <path d="M10.024 4h6.015l7.961 8-7.961 8h-6.015l7.961-8-7.961-8zm-10.024 16h6.015l7.961-8-7.961-8h-6.015l7.961 8-7.961 8z" />
+                            </svg>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-4 font-medium flex justify-end items-center group gap-2">
+                          <button
+                            className="bg-slate-950 px-4 py-2 rounded-md"
+                            onClick={() => {
+                              getClipDetails(clip._id);
+                            }}
+                          >
+                            Details
+                          </button>
+                          <button
+                            className="bg-green-600 px-4 py-2 rounded-md"
+                            onClick={() => {
+                              verifyClip(clip._id);
+                            }}
+                          >
+                            Verify clip
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="p-4 font-medium flex justify-end items-center group gap-2">
-                      <button
-                        className="bg-slate-950 px-4 py-2 rounded-md"
-                        onClick={() => {
-                          getClipDetails(clip._id);
-                        }}
-                      >
-                        Details
-                      </button>
-                      <button
-                        className="bg-green-600 px-4 py-2 rounded-md"
-                        onClick={() => {
-                          verifyClip(clip._id);
-                        }}
-                      >
-                        Verify clip
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
           </div>
         )}
 

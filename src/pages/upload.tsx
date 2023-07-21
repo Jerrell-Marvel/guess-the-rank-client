@@ -6,8 +6,8 @@ import axios from "axios";
 import { Rank } from "@/types/rank";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Clip } from "@/types/clip";
-import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
-import RanksDropdown from "@/components/Dropdown/RanksDropdown";
+import CategoriesDropdown from "@/components/dropdown/CategoriesDropdown";
+import RanksDropdown from "@/components/dropdown/RanksDropdown";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 

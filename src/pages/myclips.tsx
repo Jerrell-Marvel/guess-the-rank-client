@@ -9,9 +9,10 @@ import { addQueryParams } from "@/utils/AddQueryParams";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Guesses, GuessesWithPercentage } from "@/types/guess";
 import { Rank } from "@/types/rank";
-import CategoriesDropdown from "@/components/Dropdown/CategoriesDropdown";
-import StatusDropdown from "@/components/Dropdown/StatusDropdown";
-import ClipDetails from "@/components/Modals/ClipDetails";
+import CategoriesDropdown from "@/components/dropdown/CategoriesDropdown";
+import StatusDropdown from "@/components/dropdown/StatusDropdown";
+import ClipDetails from "@/components/modals/ClipDetails";
+import YoutubeCardSkeleton from "@/components/skeleton/YoutubeCardSkeleton";
 
 const status = ["pending", "verified"];
 type GetClipDetailsResponse = { clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number };
@@ -59,7 +60,11 @@ const MyClips = () => {
     }
   }, [router.isReady]);
 
-  const { data: clips } = useQuery<Clips, AxiosError>({
+  const {
+    data: clips,
+    isLoading: isClipsLoading,
+    isError: isClipsError,
+  } = useQuery<Clips, AxiosError>({
     queryKey: ["clips", selectedCategory?.name, activeStatus],
     queryFn: async () => {
       const response = await axios.get<Clips>("http://localhost:5000/api/v1/clips", {
@@ -188,54 +193,60 @@ const MyClips = () => {
             to start uploading clip!
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-            {clips?.map((clip) => {
-              return (
-                <div
-                  className="w-full aspect-[560/315] bg-slate-800 rounded-md"
-                  key={clip._id}
-                >
-                  <iframe
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${youtubeParser(clip.link)}`}
-                    title="YouTube video player"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-
-                  {clip.status === "verified" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            {isClipsLoading
+              ? Array(10)
+                  .fill(true)
+                  .map((e, i) => {
+                    return <YoutubeCardSkeleton key={Date.now() + i} />;
+                  })
+              : clips?.map((clip) => {
+                  return (
                     <div
-                      className="p-4 font-medium flex justify-end items-center group cursor-pointer"
-                      onClick={() => {
-                        // document.body.style.overflowY = "hidden";
-                        // document.body.style.paddingRight = "17px";
-                        getClipDetails(clip._id);
-                      }}
+                      className="w-full aspect-[560/315] bg-slate-800 rounded-md"
+                      key={clip._id}
                     >
-                      <div className="flex gap-1 items-center group-hover:translate-x-[4px] transition duration-300">
-                        <span> See details</span>
+                      <iframe
+                        width="560"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${youtubeParser(clip.link)}`}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
 
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="white"
-                          className="-mb-[1px]"
+                      {clip.status === "verified" ? (
+                        <div
+                          className="p-4 font-medium flex justify-end items-center group cursor-pointer"
+                          onClick={() => {
+                            // document.body.style.overflowY = "hidden";
+                            // document.body.style.paddingRight = "17px";
+                            getClipDetails(clip._id);
+                          }}
                         >
-                          <path d="M10.024 4h6.015l7.961 8-7.961 8h-6.015l7.961-8-7.961-8zm-10.024 16h6.015l7.961-8-7.961-8h-6.015l7.961 8-7.961 8z" />
-                        </svg>
-                      </div>
+                          <div className="flex gap-1 items-center group-hover:translate-x-[4px] transition duration-300">
+                            <span> See details</span>
+
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="white"
+                              className="-mb-[1px]"
+                            >
+                              <path d="M10.024 4h6.015l7.961 8-7.961 8h-6.015l7.961-8-7.961-8zm-10.024 16h6.015l7.961-8-7.961-8h-6.015l7.961 8-7.961 8z" />
+                            </svg>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-4 font-medium flex justify-end items-center group">Clip has not been verified yet</div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="p-4 font-medium flex justify-end items-center group">Clip has not been verified yet</div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
           </div>
         )}
 

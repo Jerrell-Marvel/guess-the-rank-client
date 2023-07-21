@@ -10,7 +10,7 @@ import Image from "next/image";
 import { youtubeParser } from "@/utils/youtubeParser";
 import { Rank } from "@/types/rank";
 import Link from "next/link";
-import LoadingSpinner from "@/components/Spinner/LoadingSpinner";
+import LoadingSpinner from "@/components/spinner/LoadingSpinner";
 
 type SubmitResponse = { isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number; actualRank: Rank };
 
