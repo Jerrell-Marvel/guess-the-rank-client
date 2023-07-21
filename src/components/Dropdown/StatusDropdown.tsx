@@ -34,7 +34,7 @@ const StatusDropdown = ({ activeStatus, onClick, onItemClick, isStatusActive }: 
           {stats.map((stat) => {
             return (
               <li
-                className="w-full py-3 px-3 border-[1px] border-white rounded-sm capitalize cursor-pointer hover:bg-slate-600"
+                className="w-full py-3 px-3 rounded-sm capitalize cursor-pointer hover:bg-slate-600 bg-slate-700"
                 key={stat}
                 onClick={() => {
                   onItemClick(stat);
